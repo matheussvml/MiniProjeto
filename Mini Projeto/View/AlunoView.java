@@ -1,25 +1,25 @@
 package View;
-import Model.Aluno;
-import Controllers.AlunoController;
 
+import Model.Aluno;
 import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
 
 public class AlunoView {
 
-    private final AlunoController alunoController = new AlunoController();
-    private final Scanner scanner = new Scanner(System.in);
-
-    public void listarAlunosHistoriaPresencial() {
-        try {
-            List<Aluno> alunos = alunoController.listarAlunosHistoriaPresencial();
-            alunos.forEach(System.out::println);
-        } catch (Exception e) {
-            System.out.println("Erro ao listar alunos de História (presencial): " + e.getMessage());
+    // Listar todos os alunos
+    public void listarAlunos(List<Aluno> alunos) {
+        System.out.println("\nAlunos cadastrados:");
+        for (Aluno aluno : alunos) {
+            System.out.println("ID: " + aluno.getId() + ", Nome: " + aluno.getNome());
         }
+        System.out.println(alunos.size() + " aluno(s) listado(s)");
     }
 
-
+    // Exibir detalhes de um aluno específico
+    public void alunoInfo(Aluno aluno) {
+        if (aluno != null) {
+            System.out.println("Detalhes do Aluno: " + aluno);
+        } else {
+            System.out.println("Aluno não encontrado.");
+        }
+    }
 }
-

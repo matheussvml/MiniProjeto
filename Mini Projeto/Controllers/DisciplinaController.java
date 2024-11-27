@@ -1,58 +1,55 @@
 package Controllers;
 
+import Model.Aluno;
 import Model.Disciplina;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import View.DisciplinaView;
 import java.util.List;
-import java.util.Optional;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.type.TypeReference;
+import java.util.Set;
 
 public class DisciplinaController {
+        private final Disciplina disciplinaModel;
+        private final DisciplinaView view;
 
-        private static final String BASE_URL = "https://sswfuybfs8.execute-api.us-east-2.amazonaws.com/disciplinaServico/msDisciplina";
-        private final HttpClient client;
-        private final ObjectMapper mapper;
-
-        public DisciplinaController() {
-                this.client = HttpClient.newHttpClient();
-                this.mapper = new ObjectMapper();
+        public DisciplinaController(String DisciplinasURL) {
+                this.disciplinaModel = new Disciplina();
+                this.view = new DisciplinaView();
         }
 
-        public List<Disciplina> listarDisciplinas() throws Exception {
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(BASE_URL))
-                        .GET()
-                        .build();
-
-                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-                if (response.statusCode() == 200) {
-                        return mapper.readValue(response.body(), new TypeReference<List<Disciplina>>() {});
-                } else {
-                        throw new RuntimeException("Erro ao acessar o serviço de disciplinas: " + response.statusCode());
-                }
+        // Exibir todas as disciplinas
+        public void exibirDisciplinas() {
+                List<Disciplina> disciplinas = disciplinaModel.getDisciplinas();
+                view.listarDisciplinas(disciplinas);
         }
 
-        public Optional<Disciplina> buscarDisciplinaPorId(String id) {
-                try {
-                        HttpRequest request = HttpRequest.newBuilder()
-                                .uri(URI.create(BASE_URL + "/" + id))
-                                .GET()
-                                .build();
+        // Exibir disciplinas matriculadas para um aluno específico
+        public void listarDisciplinasMatriculadas(String alunoId) {
+                Set<String> disciplinaIds = disciplinaModel.listarDisciplinasAluno(alunoId);
+                List<Disciplina> disciplinas = disciplinaIds.stream()
+                        .map(disciplinaModel::buscarDisciplina)
+                        .filter(disciplina -> disciplina != null)
+                        .toList();
+                view.listarDisciplinasMatriculadas(disciplinas, alunoId);
+        }
 
-                        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-                        if (response.statusCode() == 200) {
-                                return Optional.of(mapper.readValue(response.body(), Disciplina.class));
+        // Matricular aluno em uma disciplina, verificando se o aluno está ativo
+        public void matricularDisciplina(String alunoId, String disciplinaId) {
+                Aluno aluno = new Aluno().buscarAluno(alunoId, null);  // Busca o aluno
+                if (aluno != null && "ativo".equalsIgnoreCase(aluno.getStatus())) {
+                        Disciplina disciplina = disciplinaModel.buscarDisciplina(disciplinaId);
+                        if (disciplina != null) {
+                                disciplinaModel.matricularAluno(alunoId, disciplinaId);
+                                view.matriculaSucesso(alunoId, disciplina.getNome());
+                        } else {
+                                view.matriculaFalha(alunoId);
                         }
-                } catch (Exception e) {
-                        System.out.println("Erro ao buscar disciplina: " + e.getMessage());
+                } else {
+                        System.out.println("Aluno inativo ou não encontrado. Matrícula não permitida.");
                 }
-                return Optional.empty();
+        }
+
+        // Remover disciplina de um aluno
+        public void removerDisciplina(String alunoId, String disciplinaId) {
+                disciplinaModel.removerDisciplina(alunoId, disciplinaId);
+                view.removerDisciplinaSucesso(alunoId, disciplinaId);
         }
 }
-
-

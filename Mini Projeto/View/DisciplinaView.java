@@ -1,33 +1,41 @@
 package View;
-import Controllers.DisciplinaController;
-import Model.Disciplina;
 
+import Model.Disciplina;
 import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
 
 public class DisciplinaView {
 
-    private final DisciplinaController disciplinaController = new DisciplinaController();
-    private final Scanner scanner = new Scanner(System.in);
-
-    public void listarDisciplinas() {
-        try {
-            List<Disciplina> disciplinas = disciplinaController.listarDisciplinas();
-            disciplinas.forEach(System.out::println);
-        } catch (Exception e) {
-            System.out.println("Erro ao listar disciplinas: " + e.getMessage());
+    public void listarDisciplinas(List<Disciplina> disciplinas) {
+        if (!disciplinas.isEmpty()) {
+            System.out.println("Disciplinas disponíveis:");
+            for (Disciplina disciplina : disciplinas) {
+                System.out.println("ID: " + disciplina.getId() + ", Nome: " + disciplina.getNome());
+            }
+        } else {
+            System.out.println("Nenhuma disciplina disponível.");
         }
     }
 
-    public void buscarDisciplinaPorId() {
-        System.out.print("Digite o ID da disciplina: ");
-        String id = scanner.nextLine();
-        Optional<Disciplina> disciplina = disciplinaController.buscarDisciplinaPorId(id);
-        disciplina.ifPresentOrElse(
-                System.out::println,
-                () -> System.out.println("Disciplina não encontrada.")
-        );
+    public void listarDisciplinasMatriculadas(List<Disciplina> disciplinas, String nomeAluno) {
+        if (!disciplinas.isEmpty()) {
+            System.out.println("Disciplinas matriculadas por " + nomeAluno + ":");
+            for (Disciplina disciplina : disciplinas) {
+                System.out.println("ID: " + disciplina.getId() + ", Nome: " + disciplina.getNome());
+            }
+        } else {
+            System.out.println("Nenhuma disciplina matriculada.");
+        }
+    }
+
+    public void matriculaSucesso(String alunoId, String disciplinaNome) {
+        System.out.println("Aluno " + alunoId + " matriculado com sucesso na disciplina: " + disciplinaNome);
+    }
+
+    public void matriculaFalha(String alunoId) {
+        System.out.println("Falha na matrícula. Verifique se o aluno " + alunoId + " está ativo.");
+    }
+
+    public void removerDisciplinaSucesso(String alunoId, String disciplinaId) {
+        System.out.println("Disciplina " + disciplinaId + " removida com sucesso do aluno " + alunoId);
     }
 }
-
