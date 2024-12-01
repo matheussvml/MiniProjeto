@@ -4,13 +4,14 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class Aluno {
+public class Aluno{
     private String id;
     private String nome;
     private String curso;
@@ -21,22 +22,20 @@ public class Aluno {
     private static final HttpClient client = HttpClient.newHttpClient();
     private static final ObjectMapper mapper = new ObjectMapper();
 
+    // Armazena os dados carregados
+    private static List<Aluno> alunoDados = null;
 
-    public Aluno(String id, String nome, String curso, String modalidade, String status) {
+    public Aluno(String id, String nome, String curso, String modalidade, String status, List<Aluno> alunoDados) {
         this.id = id;
         this.nome = nome;
         this.curso = curso;
         this.modalidade = modalidade;
         this.status = status;
+        this.alunoDados = alunoDados;
+        carregarDados();
     }
 
-    public Aluno() {
-        this.id = id;
-        this.nome = nome;
-        this.curso = curso;
-        this.modalidade = modalidade;
-        this.status = status;
-    }
+    public Aluno() {}
 
     // Getters e Setters
     public String getId() { return id; }
@@ -51,33 +50,37 @@ public class Aluno {
     public String getModalidade() { return modalidade; }
     public void setModalidade(String modalidade) { this.modalidade = modalidade; }
 
-    public String getStatus() {
-        return status;
-    }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 
-    public void setStatus(String status) {
-        this.status = status;
+    // Carrega os dados de alunos (somente uma vez)
+    private static void carregarDados() {
+        if (alunoDados == null) { // Verifica se os dados já foram carregados
+            try {
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(BASE_URL))
+                        .GET()
+                        .build();
+                HttpResponse<String> response = client
+                        .send(request, HttpResponse.BodyHandlers.ofString());
+
+                if (response.statusCode() == 200) {
+                    alunoDados = mapper.readValue(response.body(), new TypeReference<List<Aluno>>() {});
+                } else {
+                    System.out.println("Erro ao buscar alunos: " + response.statusCode());
+                    alunoDados = new ArrayList<>(); // Lista vazia em caso de erro
+                }
+            } catch (Exception e) {
+                System.out.println("Erro: " + e.getMessage());
+                alunoDados = new ArrayList<>(); // Lista vazia em caso de erro
+            }
+        }
     }
 
     // Obter todos os alunos
     public List<Aluno> getAlunos() {
-        try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(BASE_URL))
-                    .GET()
-                    .build();
-            HttpResponse<String> response = client
-                    .send(request, HttpResponse.BodyHandlers.ofString());
-
-            if (response.statusCode() == 200) {
-                return mapper.readValue(response.body(), new TypeReference<List<Aluno>>() {});
-            } else {
-                System.out.println("Erro ao buscar alunos: " + response.statusCode());
-            }
-        } catch (Exception e) {
-            System.out.println("Erro: " + e.getMessage());
-        }
-        return List.of();
+        carregarDados(); // Garante que os dados estão carregados
+        return alunoDados;
     }
 
     // Filtrar alunos do curso de História e modalidade presencial

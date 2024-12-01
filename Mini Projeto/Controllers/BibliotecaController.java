@@ -45,6 +45,8 @@ public class BibliotecaController {
         }
     }
 
+
+
     // Listar livros reservados por aluno
     public void listarLivrosReservados(String alunoId) {
         Aluno aluno = new Aluno().buscarAluno(alunoId, null); // Buscar aluno pelo ID
