@@ -23,20 +23,27 @@ public class DisciplinaController {
 
         // Exibir disciplinas matriculadas para um aluno específico
         public void listarDisciplinasMatriculadas(String alunoId) {
+                Aluno aluno = new Aluno().buscarAluno(alunoId, null);
                 Set<String> disciplinaIds = disciplinaModel.listarDisciplinasAluno(alunoId);
                 List<Disciplina> disciplinas = disciplinaIds.stream()
                         .map(disciplinaModel::buscarDisciplina)
                         .filter(disciplina -> disciplina != null)
                         .toList();
-                view.listarDisciplinasMatriculadas(disciplinas, alunoId);
+                view.listarDisciplinasMatriculadas(disciplinas, aluno.getNome());
         }
+
+        //    matriculas{
+//        (alunoId)"1":(disciplinaId)["1"],
+//        (alunoId)"2":(disciplinaId)["5"],
+//        (alunoId)"3":(disciplinaId)["2"],
+//    }
 
         // Matricular aluno em uma disciplina, verificando se o aluno está ativo
         public void matricularDisciplina(String alunoId, String disciplinaId) {
                 Aluno aluno = new Aluno().buscarAluno(alunoId, null);  // Busca o aluno
-                if (aluno != null && "ativo".equalsIgnoreCase(aluno.getStatus())) {
+                if (aluno != null && "ativo".equalsIgnoreCase(aluno.getStatus()) && "Presencial".equalsIgnoreCase(aluno.getModalidade())) {
                         Disciplina disciplina = disciplinaModel.buscarDisciplina(disciplinaId);
-                        if (disciplina != null) {
+                        if (disciplina != null && "História".equalsIgnoreCase(disciplina.getCurso())) {
                                 disciplinaModel.matricularAluno(alunoId, disciplinaId);
                                 view.matriculaSucesso(alunoId, disciplina.getNome());
                         } else {
@@ -52,4 +59,11 @@ public class DisciplinaController {
                 disciplinaModel.removerDisciplina(alunoId, disciplinaId);
                 view.removerDisciplinaSucesso(alunoId, disciplinaId);
         }
+
+        //    matriculas{
+//        (alunoId)"1":(disciplinaId)["1"],
+//        (alunoId)"2":(disciplinaId)["5"],
+//        (alunoId)"3":(disciplinaId)[],
+//    }
+
 }

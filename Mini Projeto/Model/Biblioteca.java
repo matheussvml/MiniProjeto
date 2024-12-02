@@ -23,7 +23,7 @@ public class Biblioteca {
     private static final HttpClient client = HttpClient.newHttpClient();
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    private static final Map<String, List<String>> reservas = new HashMap<>();
+    private static Map<String, List<String>> reservas = new HashMap<>();
     private static List<Biblioteca> livrosDados = null; // Armazena os dados carregados
 
     public Biblioteca(String id, String titulo, String autor, int ano, String status,List<Biblioteca> livrosDados,Map<String, List<String>> reservas) {
@@ -32,6 +32,7 @@ public class Biblioteca {
         this.autor = autor;
         this.ano = ano;
         this.status = status;
+        this.reservas = reservas;
         this.livrosDados = livrosDados;
         carregarDados();
     }
@@ -118,6 +119,11 @@ public class Biblioteca {
         }
         return false;
     }
+
+    //    matriculas{
+//        (alunoId)"1":(Id)["1"],
+//        (alunoId)"2":(Id)["5"]
+//    }
 
     // Listar livros reservados pelo aluno
     public List<String> listarLivrosReservados(String alunoId) {

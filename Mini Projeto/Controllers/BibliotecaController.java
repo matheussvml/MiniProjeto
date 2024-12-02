@@ -45,7 +45,10 @@ public class BibliotecaController {
         }
     }
 
-
+//    matriculas{
+//        (alunoId)"1":(disciplinaId)["1"],
+//        (alunoId)"2":(disciplinaId)["5"]
+//    }
 
     // Listar livros reservados por aluno
     public void listarLivrosReservados(String alunoId) {

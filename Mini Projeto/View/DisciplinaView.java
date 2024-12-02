@@ -31,9 +31,11 @@ public class DisciplinaView {
         System.out.println("Aluno " + alunoId + " matriculado com sucesso na disciplina: " + disciplinaNome);
     }
 
+    // Exibir falha de matrícula devido à disciplina não ser do curso de História
     public void matriculaFalha(String alunoId) {
-        System.out.println("Falha na matrícula. Verifique se o aluno " + alunoId + " está ativo.");
+        System.out.println("Falha na matrícula. Verifique se a disciplina pertence ao curso de História.");
     }
+
 
     public void removerDisciplinaSucesso(String alunoId, String disciplinaId) {
         System.out.println("Disciplina " + disciplinaId + " removida com sucesso do aluno " + alunoId);

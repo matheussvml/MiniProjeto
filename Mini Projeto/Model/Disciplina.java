@@ -73,6 +73,7 @@ public class Disciplina {
         return disciplinasDados;
     }
 
+
     // Cria um fluxo de dados (stream) a partir do conjunto das disciplinas
     // Buscar disciplina por ID
     public Disciplina buscarDisciplina(String disciplinaId) {
@@ -88,16 +89,14 @@ public class Disciplina {
     }
 
 //    matriculas{
-//        (alunoId)"1":(disciplinaId)["1"]
+//        (alunoId)"1":(disciplinaId)["1"],
+//        (alunoId)"2":(disciplinaId)["5"]
 //    }
 
     // Listar disciplinas de um aluno
     public Set<String> listarDisciplinasAluno(String alunoId) {
         return matriculas.getOrDefault(alunoId, Set.of());
     }
-
-
-
     //Tenta obter o valor associado ao alunoId no mapa.
     //Se o alunoId não existir no mapa, retorna um valor padrão especificado, neste caso Set.of().
 
